@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Food</title>
+	<link rel="stylesheet" href="./CSS/bootstrap.min.css">
+<style>
+/* <!-- Nav Section Start --> */
+
+ .navBar{
+    position: sticky;
+    top: 0;
+    background-color: #0d6efd;
+    padding-bottom: 1%;
+ }
+
+.topNav{
+    display: flex;
+    justify-content: space-between;
+    padding: 2%;
+    height: 10vh;
+    
+}
+
+.navBar a{
+    text-decoration: none;
+    font-weight: 600;
+    color: white;
+    
+    
+}
+
+.topNav .logo a{
+    color: rgba(204, 237, 18, 0.834);
+    font-weight: 900;
+    letter-spacing: 0.5em;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.topNav .navItems{
+    margin-right: 1%;
+}
+
+ .topNav .navItems a{
+    margin-right: 1em;
+}
+
+ .topNav .navItems a:hover{
+    color: orange;
+    text-decoration: none;
+} 
+
+/* <!-- Nav Section End --> */
+
+.heading{
+	text-align: center;
+	margin-bottom: 50px;
+}
+
+.left{
+	width: 30%;
+	float: left;
+	
+}
+
+.right{
+	width: 65%;
+	float: right;
+	}
+
+.pad{
+	padding-bottom: 60px;
+}
+
+.set{
+	width: 60%;
+	margin-bottom: 40px;
+}
+button{
+	background-color: #0d6efd;
+	color: white;
+}
+
+.MenuItems{
+	background-color: #0d6efd;
+	color: white;
+}
+
+body{
+  background-image: url("img/shapes/Frame\ 57.jpg");
+  background-size: 50%;
+
+}
+
+</style>
+</head>
+<body onload="fillDropDown()">
+	<section class="navBar">
+		<div class="topNav">
+			<div class="logo">
+				<a href="index.html" style="font-size: larger; color: white;"><span>SAR</span> IBA</a>
+			</div>
+		</div>
+	</section>
+	<div class="bigContainer">
+		<div class="itemSelectContainer">
+			<div class="heading">
+			<h2>Place Your Order</h2>
+			<button class="btn" onclick="addAnotherItem()">Add Another Item</button>
+		    </div>
+			<div id="allOrders" class="left">
+				<div class="pad">
+					<select id="menuItems"  class="MenuItems" style="float: left; width: 50%;"></select>
+					<input type="number" placeholder="Quantity" style="float: right; width: 40%;" id="quantity">
+				</div>
+			</div>
+			<div class="right">
+				 <div id="block">
+					<input type="text" placeholder="Your Email" class="set" id="mail"> <br>
+                    <input type="text" placeholder="Phone" class="set" id="phone"> <br>
+                    <textarea placeholder="Address" class="set" id="address"></textarea>
+                    <button class="btn set" onclick="sendOrder()">Order Now</button>
+				</div>
+				<div id="orderInfo">
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+    <body>
+	<script>
+		var itemsObjArray = [];
+		var fillDropDown = function(){
+			for(i=0;i<localStorage.length;i++){
+				itemDraft = localStorage.getItem("User" + i);
+				itemsObjArray[i] = JSON.parse(itemDraft)
+			}
+			var dropDown = document.getElementById('menuItems');
+			for(i=0;i<itemsObjArray.length;i++){
+				var optionTag = document.createElement('option');
+				optionTag.setAttribute('value',itemsObjArray[i].name);
+				optionTag.innerText = itemsObjArray[i].name;
+				dropDown.appendChild(optionTag);
+			}
+		}
+
+		function addAnotherItem(){
+				
+			var div = document.createElement('div');
+				div.setAttribute('class','pad');
+				var select = document.createElement('select');
+				select.setAttribute('name','menuItems');
+				select.style.float = "left";
+				select.setAttribute('class','MenuItems')
+				select.style.width = "50%";
+				var input = document.createElement('input')
+				input.setAttribute('type','number')
+				input.setAttribute('placeholder','Quantity')
+				input.style.float = "right";
+				input.style.width = "40%";
+
+			for(i=0;i<itemsObjArray.length;i++){
+				var optionTag = document.createElement('option');
+				optionTag.setAttribute('value',itemsObjArray[i].name);
+				optionTag.innerText = itemsObjArray[i].name;
+				select.appendChild(optionTag);
+			}
+
+			    div.appendChild(select);
+				div.appendChild(input);
+
+
+				var nextItems = document.getElementById('allOrders');
+				nextItems.appendChild(div);
+		}
+			
+		function sendOrder(){
+				var orderinfo = document.getElementById('orderInfo');
+				orderinfo.innerHTML = "";
+				var itemOrders = [];
+				var allItems = document.getElementById('allOrders').children;
+			for(i=0;i<allItems.length;i++){
+					var parentNode = allItems[i].children;
+					//var selectValue = parentNode[0].options[parentNode[0].selectedIndex].value;
+					var obj = {};
+					var selectValue = parentNode[0].options[parentNode[0].selectedIndex].value;
+					obj.name = selectValue;
+					obj.quantity = parentNode[1].value
+					
+				for(j=0;j<itemsObjArray.length;j++){
+						if(itemsObjArray[j].name == obj.name){
+							obj.price = itemsObjArray[j].price;
+						}
+				}
+				itemOrders.push(obj);
+			}
+
+				var sendMsg = "";
+				var total = 0;
+				for(i=0;i<itemOrders.length;i++){
+					total += (itemOrders[i].price * itemOrders[i].quantity); 
+					sendMsg += "Item: " + itemOrders[i].name + " Price: " + itemOrders[i].price + "* " + itemOrders[i].quantity + "= " + (itemOrders[i].price * itemOrders[i].quantity) +"\n";
+				 
+				}
+				
+				sendMsg += "\n Total: " + total;
+
+				var show = document.createElement('h3')
+				show.innerText = sendMsg;
+				var p = document.createElement('p');
+				p.innerText = "Do you want to confirm the order?";
+				var Yes = document.createElement('button');
+				Yes.innerText = "Yes";
+				Yes.setAttribute('class','btn btn-success');
+				Yes.style.marginRight = "10px";
+				Yes.addEventListener('click',function(){
+					var container = document.getElementsByClassName('bigContainer')[0];
+					container.innerHTML = "";
+                    var h1 = document.createElement('h1');
+					h1.style.textAlign = "center";
+					h1.innerText = "Thank You, your order has been Confirmed."
+					var h3 = document.createElement('h3');
+					h3.style.textAlign = "center";
+					h3.innerText = "Will be delivered in 45 Minutes";
+					container.appendChild(h1);
+					container.appendChild(h3);
+				});
+				var No = document.createElement('button');
+				No.innerText = "No";
+				No.addEventListener('click',function(){
+					var container = document.getElementsByClassName('bigContainer')[0];
+					container.innerHTML = "";
+                    var h1 = document.createElement('h1');
+					h1.style.textAlign = "center";
+					h1.innerText = "See you next time"
+					container.appendChild(h1);
+				});
+				
+				No.setAttribute('class','btn btn-danger');
+
+				
+				orderinfo.appendChild(show);
+				orderinfo.appendChild(p);
+				orderinfo.appendChild(Yes);
+				orderinfo.appendChild(No);
+			
+			}
+
+		</script>
+    </body>
+</html>

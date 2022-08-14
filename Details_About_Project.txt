@@ -1,0 +1,13 @@
+We are group of three students
+
+Ameet  023-19_0083
+
+Rashid 023-19-0081
+
+Sanjay 023-19-0075
+
+Ameet part was Main Page.
+
+Rashid part was Contact Page and adding the menu items.
+
+Sanjay part was Order Page.
